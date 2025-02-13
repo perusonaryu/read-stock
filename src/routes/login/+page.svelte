@@ -20,6 +20,7 @@
 <form onsubmit={signIn}>
 	<input type="email" bind:value={email} placeholder="メールアドレス" required />
 	<input type="password" bind:value={password} placeholder="パスワード" required />
+	<button type="submit">ログイン</button>
 </form>
 
 {#if errorMessage}

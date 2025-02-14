@@ -5,7 +5,6 @@
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
-	let title = '';
 	let url = '';
 	let articles = writable<Database['public']['Tables']['articles']['Row'][]>([]);
 	let user = writable<User | null>(null);
@@ -33,7 +32,7 @@
 		const res = await fetch('/api/articles', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ title, url, user_id: userData.id })
+			body: JSON.stringify({ url, user_id: userData.id })
 		});
 
 		const result = await res.json();
@@ -46,14 +45,34 @@
 	}
 </script>
 
-<form on:submit|preventDefault={saveArticle}>
-	<input type="text" bind:value={title} placeholder="タイトル" required />
-	<input type="url" bind:value={url} placeholder="記事のURL" required />
-	<button type="submit">保存</button>
-</form>
+<header class="sticky top-0 z-10 h-15 w-full bg-white p-2">
+	<form
+		on:submit|preventDefault={saveArticle}
+		class="flex w-full items-center justify-between gap-2"
+	>
+		<input
+			class="rounded-md border border-gray-300 p-2"
+			type="url"
+			bind:value={url}
+			placeholder="記事のURL"
+			required
+		/>
+		<button type="submit" class="rounded-md bg-blue-500 px-4 py-2 text-white">保存</button>
+	</form>
+</header>
 
-<ul>
-	{#each $articles as article}
-		<li>{article.title} - <a href={article.url} target="_blank">{article.url}</a></li>
-	{/each}
-</ul>
+<div class="w-full p-2">
+	<ul class="grid w-full grid-cols-1 gap-2">
+		{#each $articles as article}
+			<li class="h-25 w-full rounded-md bg-gray-100 p-3">
+				<a href={article.url} target="_blank" class="flex h-full items-center gap-2">
+					<div class="h-10 w-10 rounded-md bg-gray-200">
+						<img src={article.thumbnail} alt="" class="object-fit h-full w-full rounded-sm" />
+					</div>
+					<div class="flex-1 text-sm">{article.title}</div>
+				</a>
+			</li>
+			<!-- <li>{article.title} - <a href={article.url} target="_blank">{article.url}</a></li> -->
+		{/each}
+	</ul>
+</div>

@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { supabase } from '$lib';
 	import { goto } from '$app/navigation';
 
+	let { data } = $props();
+	let { supabase } = $derived(data);
 	let email = $state('');
 	let password = $state('');
 	let errorMessage = $state('');

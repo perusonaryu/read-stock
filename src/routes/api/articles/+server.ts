@@ -1,9 +1,8 @@
 import { json } from '@sveltejs/kit';
-import { supabase } from '$lib/supabase/client';
 import type { RequestHandler } from './$types';
 import * as cheerio from 'cheerio';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	const user_id = url.searchParams.get('user_id');
 
 	if (!user_id) {
@@ -22,7 +21,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	return json(data);
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals: { supabase } }) => {
 	const { url, user_id } = await request.json();
 
 	const res = await fetch(url);

@@ -22,7 +22,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 };
 
 export const POST: RequestHandler = async ({ request, locals: { supabase } }) => {
-	const { url, user_id } = await request.json();
+	const { url, userID } = await request.json();
 
 	const res = await fetch(url);
 	const html = await res.text();
@@ -43,15 +43,28 @@ export const POST: RequestHandler = async ({ request, locals: { supabase } }) =>
 		$('img').first().attr('src') || // 5. 最初の画像タグ
 		'';
 
-	if (!title || !url || !user_id) {
+	if (!title || !url || !userID) {
 		return json({ error: '保存に失敗しました。' }, { status: 400 });
 	}
 
-	const { error } = await supabase.from('articles').insert([{ url, title, thumbnail, user_id }]);
+	const { error } = await supabase.from('articles').insert([{ url, title, thumbnail, userID }]);
 
 	if (error) {
 		return json({ error: error.message }, { status: 500 });
 	}
 
 	return json({ message: '記事を保存しました！' });
+};
+
+export const PATCH: RequestHandler = async ({ request, locals: { supabase } }) => {
+	const { articleID, isRead }: { articleID: string; isRead: boolean } = await request.json();
+
+	const read_at = isRead ? new Date().toISOString() : null;
+	const { error } = await supabase.from('articles').update({ read_at }).eq('id', articleID);
+
+	if (error) {
+		return json({ error: error.message }, { status: 500 });
+	}
+
+	return json({ data: { read_at }, message: '記事を更新しました！' });
 };

@@ -1,6 +1,6 @@
 <script>
 	import '../app.css';
-	import { invalidate } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 
 	let { data, children } = $props();
@@ -10,6 +10,10 @@
 		const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
 			if (newSession?.expires_at !== session?.expires_at) {
 				invalidate('supabase:auth');
+			}
+
+			if (!newSession) {
+				goto('/login');
 			}
 		});
 

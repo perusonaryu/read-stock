@@ -85,7 +85,6 @@
 		// 右スワイプの場合のみ移動させる
 		if (swipeDistance > 0) {
 			articleElement.style.transform = `translateX(${Math.min(swipeDistance, 150)}px)`;
-			articleElement.style.opacity = (1 - (Math.min(swipeDistance, 150) / 150) * 0.3).toString();
 		}
 	}
 
@@ -106,7 +105,6 @@
 
 		// 要素を元の位置に戻す
 		articleElement.style.transform = 'translateX(0)';
-		articleElement.style.opacity = '1';
 
 		// リセット
 		activeSwipeItem = null;
@@ -132,7 +130,7 @@
 	<ul class="grid w-full grid-cols-1 gap-2">
 		{#each articles as article}
 			<li
-				class="h-25 w-full rounded-md bg-gray-100 p-2 transition-transform duration-300"
+				class="h-25 w-full rounded-md bg-gray-100 p-2"
 				class:read={article.read_at !== null}
 				ontouchstart={(e) => handleTouchStart(e, article)}
 				ontouchmove={(e) => handleTouchMove(e, e.currentTarget)}

@@ -38,6 +38,8 @@
 	let touchStartX = $state(0);
 	let touchEndX = $state(0);
 	let activeSwipeItem: string | null = $state(null);
+	let swipeLeft = $state(false);
+	let swipeRight = $state(false);
 
 	// スワイプのしきい値（ピクセル）
 	const SWIPE_THRESHOLD = 100;
@@ -102,11 +104,17 @@
 		touchEndX = e.touches[0].clientX;
 		const swipeDistance = touchEndX - touchStartX;
 
-		// 左スワイプの場合のみ移動させる
+		// 左スワイプの場合
 		if (swipeDistance < 0) {
 			articleElement.style.transform = `translateX(${Math.max(swipeDistance, -(articleElement.clientWidth * 0.9))}px)`;
-		} else {
+			swipeLeft = true;
+			swipeRight = false;
+		}
+		// 右スワイプの場合
+		else {
 			articleElement.style.transform = `translateX(${Math.min(swipeDistance, articleElement.clientWidth * 0.9)}px)`;
+			swipeRight = true;
+			swipeLeft = false;
 		}
 	}
 
@@ -134,6 +142,8 @@
 		activeSwipeItem = null;
 		touchStartX = 0;
 		touchEndX = 0;
+		swipeLeft = false;
+		swipeRight = false;
 	}
 </script>
 
@@ -150,23 +160,35 @@
 	</form>
 </header>
 
-<div class="w-full p-2">
+<div class="w-full py-2">
 	<ul class="grid w-full grid-cols-1 gap-2">
 		{#each articles as article}
-			<li
-				class="h-25 w-full rounded-md bg-gray-100 p-2"
-				class:read={article.read_at !== null}
-				ontouchstart={(e) => handleTouchStart(e, article)}
-				ontouchmove={(e) => handleTouchMove(e, e.currentTarget)}
-				ontouchend={(e) => handleTouchEnd(e, article, e.currentTarget)}
-				ontouchcancel={(e) => handleTouchEnd(e, article, e.currentTarget)}
-			>
-				<a href={article.url} target="_blank" class="flex h-full items-center gap-2">
-					<div class="h-20 w-20 rounded-md bg-gray-200">
-						<img src={article.thumbnail} alt="" class="object-fit h-full w-full rounded-sm" />
-					</div>
-					<div class="flex-1 text-sm">{article.title}</div>
-				</a>
+			<li class="relative h-25 w-full overflow-hidden">
+				<div
+					class:read={article.read_at !== null}
+					class="absolute z-10 h-full w-full bg-gray-100 p-2"
+					ontouchstart={(e) => handleTouchStart(e, article)}
+					ontouchmove={(e) => handleTouchMove(e, e.currentTarget)}
+					ontouchend={(e) => handleTouchEnd(e, article, e.currentTarget)}
+					ontouchcancel={(e) => handleTouchEnd(e, article, e.currentTarget)}
+				>
+					<a href={article.url} target="_blank" class="flex h-full items-center gap-2">
+						<div class="h-20 w-20 rounded-md bg-gray-200">
+							<img src={article.thumbnail} alt="" class="object-fit h-full w-full rounded-sm" />
+						</div>
+						<div class="flex-1 text-sm">{article.title}</div>
+					</a>
+				</div>
+				<div
+					class={`absolute top-0 left-0 z-1 h-full w-full bg-emerald-200 ${
+						swipeLeft ? 'block' : 'hidden'
+					}`}
+				></div>
+				<div
+					class={`absolute top-0 right-0 z-1 h-full w-full bg-red-200 ${
+						swipeRight ? 'block' : 'hidden'
+					}`}
+				></div>
 			</li>
 		{/each}
 	</ul>
@@ -174,8 +196,6 @@
 
 <style>
 	li {
-		position: relative;
-		overflow: hidden;
 		user-select: none;
 		touch-action: pan-y;
 	}

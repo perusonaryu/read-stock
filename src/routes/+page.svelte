@@ -35,8 +35,8 @@
 	}
 
 	// スワイプ関連の状態
-	let touchStartX = 0;
-	let touchEndX = 0;
+	let touchStartX = $state(0);
+	let touchEndX = $state(0);
 	let activeSwipeItem: string | null = $state(null);
 
 	// スワイプのしきい値（ピクセル）
@@ -82,9 +82,9 @@
 		touchEndX = e.touches[0].clientX;
 		const swipeDistance = touchEndX - touchStartX;
 
-		// 右スワイプの場合のみ移動させる
-		if (swipeDistance > 0) {
-			articleElement.style.transform = `translateX(${Math.min(swipeDistance, 150)}px)`;
+		// 左スワイプの場合のみ移動させる
+		if (swipeDistance < 0) {
+			articleElement.style.transform = `translateX(${Math.max(swipeDistance, -(articleElement.clientWidth * 0.9))}px)`;
 		}
 	}
 
@@ -98,7 +98,7 @@
 		const swipeDistance = touchEndX - touchStartX;
 
 		// スワイプが閾値を超えた場合
-		if (swipeDistance > SWIPE_THRESHOLD) {
+		if (Math.abs(swipeDistance) > SWIPE_THRESHOLD) {
 			// 既読状態に変更
 			toggleReadStatus(article);
 		}

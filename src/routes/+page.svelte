@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Database } from '$lib';
 	import { onMount } from 'svelte';
+	import SvgIcon from '@jamescoyle/svelte-icon';
+	import { mdiTrashCan, mdiTextBoxCheck } from '@mdi/js';
 
 	let { data } = $props();
 	let { user } = $derived(data);
@@ -165,7 +167,7 @@
 		{#each articles as article}
 			<li class="relative h-25 w-full overflow-hidden">
 				<div
-					class:read={article.read_at !== null}
+					class:read={!!article.read_at}
 					class="absolute z-10 h-full w-full bg-gray-100 p-2"
 					ontouchstart={(e) => handleTouchStart(e, article)}
 					ontouchmove={(e) => handleTouchMove(e, e.currentTarget)}
@@ -180,15 +182,23 @@
 					</a>
 				</div>
 				<div
-					class={`absolute top-0 left-0 z-1 h-full w-full bg-emerald-200 ${
-						swipeLeft ? 'block' : 'hidden'
-					}`}
-				></div>
+					class={`absolute top-0 left-0 z-1 h-full w-full
+					 ${!!article.read_at ? 'bg-gray-400' : 'bg-emerald-400'}
+					 ${swipeLeft ? 'block' : 'hidden'}`}
+				>
+					<div class="flex h-full w-full items-center justify-end pr-5">
+						<SvgIcon type="mdi" path={mdiTextBoxCheck} />
+					</div>
+				</div>
 				<div
-					class={`absolute top-0 right-0 z-1 h-full w-full bg-red-200 ${
+					class={`absolute top-0 right-0 z-1 h-full w-full bg-red-400 ${
 						swipeRight ? 'block' : 'hidden'
 					}`}
-				></div>
+				>
+					<div class="flex h-full w-full items-center pl-5">
+						<SvgIcon type="mdi" path={mdiTrashCan} />
+					</div>
+				</div>
 			</li>
 		{/each}
 	</ul>
@@ -202,6 +212,6 @@
 
 	.read {
 		background-color: #f0f8ff;
-		border-left: 8px solid #4caf50;
+		border-left: 8px solid oklch(0.765 0.177 163.223);
 	}
 </style>

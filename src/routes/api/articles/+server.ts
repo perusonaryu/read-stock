@@ -47,13 +47,17 @@ export const POST: RequestHandler = async ({ request, locals: { supabase } }) =>
 		return json({ error: '保存に失敗しました。' }, { status: 400 });
 	}
 
-	const { error } = await supabase.from('articles').insert([{ url, title, thumbnail }]);
+	const { data, error } = await supabase
+		.from('articles')
+		.insert([{ url, title, thumbnail }])
+		.select()
+		.single();
 
 	if (error) {
 		return json({ error: error.message }, { status: 500 });
 	}
 
-	return json({ message: '記事を保存しました！' });
+	return json({ data, message: '記事を保存しました！' });
 };
 
 export const PATCH: RequestHandler = async ({ request, locals: { supabase } }) => {

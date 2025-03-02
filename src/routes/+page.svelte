@@ -32,7 +32,8 @@
 			alert(`エラー: ${result.error}`);
 		} else {
 			alert('記事を保存しました！');
-			fetchArticles(user?.id ?? '');
+			articles = [result.data, ...articles];
+			url = '';
 		}
 	}
 

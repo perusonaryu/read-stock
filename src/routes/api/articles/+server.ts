@@ -68,3 +68,15 @@ export const PATCH: RequestHandler = async ({ request, locals: { supabase } }) =
 
 	return json({ data: { read_at }, message: '記事を更新しました！' });
 };
+
+export const DELETE: RequestHandler = async ({ request, locals: { supabase } }) => {
+	const { articleID }: { articleID: string } = await request.json();
+
+	const { error } = await supabase.from('articles').delete().eq('id', articleID);
+
+	if (error) {
+		return json({ error: error.message }, { status: 500 });
+	}
+
+	return json({ message: '記事を削除しました！' });
+};

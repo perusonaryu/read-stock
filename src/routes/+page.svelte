@@ -61,9 +61,29 @@
 				articles = articles.map((a) =>
 					a.id === article.id ? { ...a, read_at: result.data.read_at } : a
 				);
+				alert('記事を更新しました！');
 			}
 		} catch (error) {
 			console.error('Error updating article status:', error);
+		}
+	}
+
+	async function deleteArticle(articleID: string) {
+		try {
+			const res = await fetch('/api/articles', {
+				method: 'DELETE',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ articleID })
+			});
+
+			if (res.ok) {
+				articles = articles.filter((a) => a.id !== articleID);
+				alert('記事を削除しました！');
+			} else {
+				alert('記事の削除に失敗しました。');
+			}
+		} catch (error) {
+			console.error('Error deleting article:', error);
 		}
 	}
 
@@ -85,6 +105,8 @@
 		// 左スワイプの場合のみ移動させる
 		if (swipeDistance < 0) {
 			articleElement.style.transform = `translateX(${Math.max(swipeDistance, -(articleElement.clientWidth * 0.9))}px)`;
+		} else {
+			articleElement.style.transform = `translateX(${Math.min(swipeDistance, articleElement.clientWidth * 0.9)}px)`;
 		}
 	}
 
@@ -98,7 +120,9 @@
 		const swipeDistance = touchEndX - touchStartX;
 
 		// スワイプが閾値を超えた場合
-		if (Math.abs(swipeDistance) > SWIPE_THRESHOLD) {
+		if (swipeDistance > 0 && swipeDistance > SWIPE_THRESHOLD) {
+			deleteArticle(article.id);
+		} else if (swipeDistance < 0 && Math.abs(swipeDistance) > SWIPE_THRESHOLD) {
 			// 既読状態に変更
 			toggleReadStatus(article);
 		}

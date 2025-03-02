@@ -22,7 +22,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 };
 
 export const POST: RequestHandler = async ({ request, locals: { supabase } }) => {
-	const { url, userID } = await request.json();
+	const { url } = await request.json();
 
 	const res = await fetch(url);
 	const html = await res.text();
@@ -43,11 +43,11 @@ export const POST: RequestHandler = async ({ request, locals: { supabase } }) =>
 		$('img').first().attr('src') || // 5. 最初の画像タグ
 		'';
 
-	if (!title || !url || !userID) {
+	if (!title || !url) {
 		return json({ error: '保存に失敗しました。' }, { status: 400 });
 	}
 
-	const { error } = await supabase.from('articles').insert([{ url, title, thumbnail, userID }]);
+	const { error } = await supabase.from('articles').insert([{ url, title, thumbnail }]);
 
 	if (error) {
 		return json({ error: error.message }, { status: 500 });

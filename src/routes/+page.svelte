@@ -24,7 +24,7 @@
 		const res = await fetch('/api/articles', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ url, userID: user?.id })
+			body: JSON.stringify({ url })
 		});
 
 		const result = await res.json();

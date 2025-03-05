@@ -150,26 +150,13 @@
 	}
 </script>
 
-<header class="sticky top-0 z-10 h-15 w-full bg-white p-2">
-	<form onsubmit={saveArticle} class="flex w-full items-center justify-between gap-2">
-		<input
-			class="rounded-md border border-gray-300 p-2"
-			type="url"
-			bind:value={url}
-			placeholder="記事のURL"
-			required
-		/>
-		<button type="submit" class="rounded-md bg-blue-500 px-4 py-2 text-white">保存</button>
-	</form>
-</header>
-
-<div class="w-full py-2">
-	<ul class="grid w-full grid-cols-1 gap-2">
-		{#each articles as article}
-			<li class="relative h-25 w-full overflow-hidden">
+<div class="h-[calc(100svh-74px)] overflow-y-auto">
+	<ul class="grid w-full grid-cols-1">
+		{#each articles as article, i}
+			<li class="relative h-25 w-full overflow-hidden border-b border-gray-200">
 				<div
 					class:read={!!article.read_at}
-					class="absolute z-10 h-full w-full bg-gray-100 p-2"
+					class={`absolute z-10 h-full w-full ${i % 2 === 0 ? 'bg-white' : 'bg-sky-100'} p-2`}
 					ontouchstart={(e) => handleTouchStart(e, article)}
 					ontouchmove={(e) => handleTouchMove(e, e.currentTarget)}
 					ontouchend={(e) => handleTouchEnd(e, article, e.currentTarget)}
@@ -204,6 +191,28 @@
 		{/each}
 	</ul>
 </div>
+
+<footer class="fixed bottom-0 z-10 w-full bg-gray-100 p-3 shadow-md">
+	<form onsubmit={saveArticle} class="flex w-full gap-3">
+		<div class="flex-1">
+			<input
+				class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base shadow-sm focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+				type="url"
+				bind:value={url}
+				placeholder="記事のURLを入力してください"
+				required
+			/>
+		</div>
+		<div>
+			<button
+				type="submit"
+				class="w-full rounded-lg bg-blue-500 px-4 py-3 text-base font-semibold text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
+			>
+				保存
+			</button>
+		</div>
+	</form>
+</footer>
 
 <style>
 	li {

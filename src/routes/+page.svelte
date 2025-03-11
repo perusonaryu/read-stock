@@ -6,12 +6,15 @@
 
 	let { data } = $props();
 	let { user } = $derived(data);
+	let isLoading = $state(false);
 
 	let url = $state('');
 	let articles: Database['public']['Tables']['articles']['Row'][] = $state([]);
 
 	onMount(async () => {
+		isLoading = true;
 		await fetchArticles(user?.id ?? '');
+		isLoading = false;
 	});
 
 	async function fetchArticles(user_id: string) {
@@ -151,45 +154,53 @@
 </script>
 
 <div class="h-[calc(100svh-74px)] overflow-y-auto">
-	<ul class="grid w-full grid-cols-1">
-		{#each articles as article, i}
-			<li class="relative h-25 w-full overflow-hidden border-b border-gray-200">
-				<div
-					class:read={!!article.read_at}
-					class={`absolute z-10 h-full w-full ${i % 2 === 0 ? 'bg-white' : 'bg-sky-100'} p-2`}
-					ontouchstart={(e) => handleTouchStart(e, article)}
-					ontouchmove={(e) => handleTouchMove(e, e.currentTarget)}
-					ontouchend={(e) => handleTouchEnd(e, article, e.currentTarget)}
-					ontouchcancel={(e) => handleTouchEnd(e, article, e.currentTarget)}
-				>
-					<a href={article.url} target="_blank" class="flex h-full items-center gap-2">
-						<div class="h-20 w-20 rounded-md bg-gray-200">
-							<img src={article.thumbnail} alt="" class="object-fit h-full w-full rounded-sm" />
-						</div>
-						<div class="flex-1 text-sm">{article.title}</div>
-					</a>
-				</div>
-				<div
-					class={`absolute top-0 left-0 z-1 h-full w-full
+	{#if isLoading}
+		<div class="flex h-full w-full items-center justify-center">
+			<div
+				class="h-10 w-10 animate-spin rounded-full border-3 border-sky-600 border-t-transparent"
+			></div>
+		</div>
+	{:else}
+		<ul class="grid w-full grid-cols-1">
+			{#each articles as article, i}
+				<li class="relative h-25 w-full overflow-hidden border-b border-gray-200">
+					<div
+						class:read={!!article.read_at}
+						class={`absolute z-10 h-full w-full ${i % 2 === 0 ? 'bg-white' : 'bg-sky-100'} p-2`}
+						ontouchstart={(e) => handleTouchStart(e, article)}
+						ontouchmove={(e) => handleTouchMove(e, e.currentTarget)}
+						ontouchend={(e) => handleTouchEnd(e, article, e.currentTarget)}
+						ontouchcancel={(e) => handleTouchEnd(e, article, e.currentTarget)}
+					>
+						<a href={article.url} target="_blank" class="flex h-full items-center gap-2">
+							<div class="h-20 w-20 rounded-md bg-gray-200">
+								<img src={article.thumbnail} alt="" class="object-fit h-full w-full rounded-sm" />
+							</div>
+							<div class="flex-1 text-sm">{article.title}</div>
+						</a>
+					</div>
+					<div
+						class={`absolute top-0 left-0 z-1 h-full w-full
 					 ${!!article.read_at ? 'bg-gray-400' : 'bg-emerald-400'}
 					 ${swipeLeft ? 'block' : 'hidden'}`}
-				>
-					<div class="flex h-full w-full items-center justify-end pr-5">
-						<SvgIcon type="mdi" path={mdiTextBoxCheck} />
+					>
+						<div class="flex h-full w-full items-center justify-end pr-5">
+							<SvgIcon type="mdi" path={mdiTextBoxCheck} />
+						</div>
 					</div>
-				</div>
-				<div
-					class={`absolute top-0 right-0 z-1 h-full w-full bg-red-400 ${
-						swipeRight ? 'block' : 'hidden'
-					}`}
-				>
-					<div class="flex h-full w-full items-center pl-5">
-						<SvgIcon type="mdi" path={mdiTrashCan} />
+					<div
+						class={`absolute top-0 right-0 z-1 h-full w-full bg-red-400 ${
+							swipeRight ? 'block' : 'hidden'
+						}`}
+					>
+						<div class="flex h-full w-full items-center pl-5">
+							<SvgIcon type="mdi" path={mdiTrashCan} />
+						</div>
 					</div>
-				</div>
-			</li>
-		{/each}
-	</ul>
+				</li>
+			{/each}
+		</ul>
+	{/if}
 </div>
 
 <footer class="fixed bottom-0 z-10 w-full bg-gray-100 p-3 shadow-md">

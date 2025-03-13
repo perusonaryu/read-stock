@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import SvgIcon from '@jamescoyle/svelte-icon';
 	import { mdiTrashCan, mdiTextBoxCheck } from '@mdi/js';
+	import Loading from '$components/utils/Loading.svelte';
 
 	let { data } = $props();
 	let { user } = $derived(data);
@@ -153,12 +154,10 @@
 	}
 </script>
 
-<div class="h-[calc(100svh-74px)] overflow-y-auto">
+<div class="h-full overflow-y-auto">
 	{#if isLoading}
 		<div class="flex h-full w-full items-center justify-center">
-			<div
-				class="h-10 w-10 animate-spin rounded-full border-3 border-sky-600 border-t-transparent"
-			></div>
+			<Loading size="lg" />
 		</div>
 	{:else}
 		<ul class="grid w-full grid-cols-1">

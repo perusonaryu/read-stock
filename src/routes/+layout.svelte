@@ -39,20 +39,35 @@
 			}
 		});
 
-		// ServiceWorkerの登録
+		// ServiceWorkerの登録（vite-plugin-pwaの生成したものを使用）
 		if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
-			// 開発環境では登録しない
-			if (import.meta.env.DEV) return data.subscription.unsubscribe();
+			const initSW = async () => {
+				try {
+					// 明示的にimportを使用して、vite-plugin-pwaの生成したService Workerを登録
+					const { registerSW } = await import('virtual:pwa-register');
 
-			// Service Workerを登録
-			navigator.serviceWorker
-				.register('/service-worker.js')
-				.then((registration) => {
-					console.log('Service Worker登録完了:', registration);
-				})
-				.catch((error) => {
-					console.error('Service Worker登録エラー:', error);
-				});
+					// 自動更新を設定
+					reloadSW = registerSW({
+						onRegistered(registration) {
+							console.log('Service Worker登録完了:', registration);
+						},
+						onNeedRefresh() {
+							// 更新があることをユーザーに通知
+							updateAvailable = true;
+						},
+						onOfflineReady() {
+							console.log('アプリはオフラインでも使用できます');
+						},
+						onRegisterError(error) {
+							console.error('Service Worker登録エラー:', error);
+						}
+					});
+				} catch (error) {
+					console.error('PWA設定エラー:', error);
+				}
+			};
+
+			initSW();
 		}
 
 		return () => data.subscription.unsubscribe();

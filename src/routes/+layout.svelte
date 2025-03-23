@@ -3,6 +3,7 @@
 	import { goto, invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
+	import PwaInstall from '$lib/components/PwaInstall.svelte';
 
 	let { data, children } = $props();
 	let { session, supabase } = $derived(data);
@@ -10,11 +11,21 @@
 	// サイドバーの表示状態を管理する変数
 	let isSidebarOpen = $state(false);
 
+	// PWA更新通知用の状態変数
+	let updateAvailable = $state(false);
+	let reloadSW: ((forceReload?: boolean) => Promise<void>) | undefined;
+
 	// サイドバーの表示/非表示を切り替える関数
 	function toggleSidebar(e: Event) {
 		e.stopPropagation();
 		e.preventDefault();
 		isSidebarOpen = !isSidebarOpen;
+	}
+
+	// PWA更新を適用する関数
+	function applyUpdate() {
+		updateAvailable = false;
+		reloadSW?.(true);
 	}
 
 	onMount(() => {
@@ -26,19 +37,51 @@
 			if (!newSession) {
 				goto('/login');
 			}
-
-			// ServiceWorkerの登録
-			if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
-				// PWAの更新を通知するためのイベントリスナー
-				window.addEventListener('pwa:ready', () => {
-					console.log('PWAの準備ができました');
-				});
-			}
 		});
+
+		// ServiceWorkerの登録
+		if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+			// 開発環境では登録しない
+			if (import.meta.env.DEV) return data.subscription.unsubscribe();
+
+			// Service Workerを登録
+			navigator.serviceWorker
+				.register('/service-worker.js')
+				.then((registration) => {
+					console.log('Service Worker登録完了:', registration);
+				})
+				.catch((error) => {
+					console.error('Service Worker登録エラー:', error);
+				});
+		}
 
 		return () => data.subscription.unsubscribe();
 	});
 </script>
+
+<!-- PWA更新通知 -->
+{#if updateAvailable}
+	<div
+		class="fixed right-4 bottom-4 z-50 rounded-lg bg-white p-4 shadow-lg"
+		transition:fly={{ y: 20, duration: 300 }}
+	>
+		<p class="mb-2">新しいバージョンが利用可能です</p>
+		<div class="flex gap-2">
+			<button
+				class="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+				onclick={applyUpdate}
+			>
+				更新する
+			</button>
+			<button
+				class="rounded border border-gray-300 px-4 py-2 hover:bg-gray-100"
+				onclick={() => (updateAvailable = false)}
+			>
+				後で
+			</button>
+		</div>
+	</div>
+{/if}
 
 <!-- サイドバーコンポーネント -->
 {#if isSidebarOpen}
@@ -92,3 +135,6 @@
 <div class="mt-[56px] h-[calc(100svh-56px)]">
 	{@render children()}
 </div>
+
+<!-- PWAインストールプロンプト -->
+<PwaInstall />

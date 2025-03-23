@@ -34,6 +34,7 @@ export default defineConfig({
 			},
 			// ServiceWorkerの詳細設定
 			workbox: {
+				navigateFallback: '/offline',
 				// キャッシュ対象となるファイルの設定
 				globPatterns: ['**/*.{js,css,html,svg,png,jpg,jpeg,gif,webp}'],
 				// その他Workboxの設定

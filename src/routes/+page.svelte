@@ -19,7 +19,7 @@
 	});
 
 	async function fetchArticles(user_id: string) {
-		const res = await fetch(`/api/articles?user_id=${user_id}`);
+		const res = await fetch(`/api/articles/all/?user_id=${user_id}`);
 		const data = await res.json();
 		articles = data;
 	}
@@ -160,12 +160,12 @@
 			<Loading size="lg" />
 		</div>
 	{:else}
-		<ul class="grid w-full grid-cols-1">
-			{#each articles as article, i}
+		<ul class="flex w-full flex-col pb-10">
+			{#each articles as article}
 				<li class="relative h-25 w-full overflow-hidden border-b border-gray-200">
 					<div
 						class:read={!!article.read_at}
-						class={`absolute z-10 h-full w-full ${i % 2 === 0 ? 'bg-white' : 'bg-sky-100'} p-2`}
+						class="absolute z-10 h-full w-full bg-white p-2"
 						ontouchstart={(e) => handleTouchStart(e, article)}
 						ontouchmove={(e) => handleTouchMove(e, e.currentTarget)}
 						ontouchend={(e) => handleTouchEnd(e, article, e.currentTarget)}
@@ -231,7 +231,6 @@
 	}
 
 	.read {
-		background-color: #f0f8ff;
-		border-left: 8px solid oklch(0.765 0.177 163.223);
+		background-color: #f9fafb;
 	}
 </style>

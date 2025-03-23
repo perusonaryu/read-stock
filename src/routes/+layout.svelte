@@ -81,6 +81,6 @@
 	<h1 class="text-2xl font-bold">Read Stack</h1>
 </header>
 
-<div class="mt-[56px] h-[calc(100svh-130px)]">
+<div class="mt-[56px] h-[calc(100svh-56px)]">
 	{@render children()}
 </div>

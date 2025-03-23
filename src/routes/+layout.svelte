@@ -26,6 +26,14 @@
 			if (!newSession) {
 				goto('/login');
 			}
+
+			// ServiceWorkerの登録
+			if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+				// PWAの更新を通知するためのイベントリスナー
+				window.addEventListener('pwa:ready', () => {
+					console.log('PWAの準備ができました');
+				});
+			}
 		});
 
 		return () => data.subscription.unsubscribe();

@@ -10,27 +10,38 @@ export default defineConfig({
 		VitePWA({
 			// PWAの基本設定
 			registerType: 'autoUpdate',
+			includeAssets: ['favicon.png'],
 			manifest: {
 				name: 'Read Stack',
 				short_name: 'ReadStack',
-				description: 'Read Stack',
+				description: 'Read Stack - ウェブ記事をまとめて管理できるアプリ',
 				theme_color: '#ffffff',
 				background_color: '#ffffff',
 				display: 'standalone',
 				icons: [
 					{
-						src: 'favicon.png',
+						src: 'icons/icon-192x192.png',
 						sizes: '192x192',
 						type: 'image/png'
 					},
 					{
-						src: 'favicon.png',
+						src: 'icons/icon-512x512.png',
 						sizes: '512x512',
-						type: 'image/png'
+						type: 'image/png',
+						purpose: 'any maskable'
 					}
 				],
 				start_url: '/',
-				scope: '/'
+				scope: '/',
+				share_target: {
+					action: '/share-target',
+					method: 'GET',
+					params: {
+						title: 'title',
+						text: 'text',
+						url: 'url'
+					}
+				}
 			},
 			// ServiceWorkerの詳細設定
 			workbox: {
